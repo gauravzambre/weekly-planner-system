@@ -1,0 +1,87 @@
+# =========================
+# .NET build folders
+# =========================
+# These are generated when building the .NET project
+bin/
+obj/
+out/
+
+
+# =========================
+# .NET user files
+# =========================
+# These contain local developer settings
+*.user
+*.rsuser
+*.suo
+
+
+# =========================
+# Visual Studio folder
+# =========================
+# Visual Studio creates this folder automatically
+.vs/
+
+
+# =========================
+# Node.js dependencies
+# =========================
+# node_modules contains installed packages
+# It can be recreated using npm install
+node_modules/
+
+
+# =========================
+# Angular build output
+# =========================
+# These are generated when Angular builds the app
+dist/
+build/
+.angular/
+
+
+# =========================
+# Log files
+# =========================
+# Logs are generated automatically
+*.log
+logs/
+
+
+# =========================
+# Environment files
+# =========================
+# These may contain secrets like passwords or API keys
+.env
+
+
+# =========================
+# VS Code settings
+# =========================
+# Editor-specific settings
+.vscode/
+
+
+# =========================
+# Test output
+# =========================
+# Generated when running tests
+TestResults/
+coverage/
+
+
+# =========================
+# OS generated files
+# =========================
+# Created automatically by Windows/macOS
+.DS_Store
+Thumbs.db
+
+
+# =========================
+# Temporary files
+# =========================
+# Created temporarily during development
+tmp/
+temp/
+*.tmp

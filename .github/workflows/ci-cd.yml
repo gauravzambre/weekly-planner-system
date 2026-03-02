@@ -1,0 +1,68 @@
+name: Weekly Planner CI/CD
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+
+  backend:
+    name: Build .NET Backend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Check backend exists
+        run: ls -la
+
+      - name: Restore (safe)
+        run: |
+          if [ -f "*.sln" ]; then dotnet restore; else echo "No solution yet"; fi
+
+      - name: Build (safe)
+        run: |
+          if [ -f "*.sln" ]; then dotnet build --no-restore; else echo "No build yet"; fi
+
+
+  frontend:
+    name: Build Angular Frontend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check frontend exists
+        run: ls -la
+
+      - name: Install (safe)
+        run: |
+          if [ -f "package.json" ]; then npm install; else echo "No frontend yet"; fi
+
+      - name: Build (safe)
+        run: |
+          if [ -f "package.json" ]; then npm run build; else echo "No build yet"; fi

@@ -457,9 +457,4 @@ Backend Developer – .NET / Cloud
 
 ---
 
-If you want, I can also create a **second file that will impress reviewers even more:**
-
-* `ARCHITECTURE.md` (system design diagrams)
-* `DATABASE_SCHEMA.md` (SQL + ER diagram)
-* `API_DOCUMENTATION.md` (Swagger-level explanation)
 

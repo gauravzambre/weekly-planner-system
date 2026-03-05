@@ -31,11 +31,19 @@ jobs:
 
       - name: Restore (safe)
         run: |
-          if [ -f "*.sln" ]; then dotnet restore; else echo "No solution yet"; fi
+          if ls *.sln 1> /dev/null 2>&1; then
+            dotnet restore
+          else
+            echo "No solution yet"
+          fi
 
       - name: Build (safe)
         run: |
-          if [ -f "*.sln" ]; then dotnet build --no-restore; else echo "No build yet"; fi
+          if ls *.sln 1> /dev/null 2>&1; then
+            dotnet build --no-restore
+          else
+            echo "No build yet"
+          fi
 
 
   frontend:
@@ -61,8 +69,73 @@ jobs:
 
       - name: Install (safe)
         run: |
-          if [ -f "package.json" ]; then npm install; else echo "No frontend yet"; fi
+          if [ -f "package.json" ]; then
+            npm install
+          else
+            echo "No frontend yet"
+          fi
 
       - name: Build (safe)
         run: |
-          if [ -f "package.json" ]; then npm run build; else echo "No build yet"; fi
+          if [ -f "package.json" ]; then
+            npm run build
+          else
+            echo "No build yet"
+          fi
+
+
+  deploy-backend:
+    name: Deploy Backend to Azure
+    needs: backend
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Publish API
+        run: dotnet publish backend -c Release -o publish
+
+      - name: Deploy to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: weekly-planner-cloud-platform-api
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: publish
+
+
+  deploy-frontend:
+    name: Deploy Angular UI to Azure
+    needs: frontend
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: frontend
+
+      - name: Build Angular App
+        run: npm run build
+        working-directory: frontend
+
+      - name: Deploy UI to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: weekly-planner-cloud-platform-ui
+          publish-profile: ${{ secrets.AZURE_UI_PUBLISH_PROFILE }}
+          package: frontend/dist

@@ -27,36 +27,33 @@ jobs:
         run: ls -la backend
 
       - name: Restore dependencies
-        run: dotnet restore backend/WeeklyPlanner.csproj
+        run: dotnet restore backend/WeeklyPlanner.API.csproj
 
       - name: Build project
-        run: dotnet build backend/WeeklyPlanner.csproj --configuration Release --no-restore
+        run: dotnet build backend/WeeklyPlanner.API.csproj --configuration Release --no-restore
 
 # ---------------- FRONTEND BUILD ----------------
 
   frontend:
-    name: Build Angular Frontend
-    runs-on: ubuntu-latest
+  name: Build Angular Frontend
+  runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
 
-      - name: Verify frontend folder
-        run: ls -la frontend
+    - name: Install dependencies
+      run: npm install
+      working-directory: frontend/weekly-planner-ui
 
-      - name: Install dependencies
-        run: npm install
-        working-directory: frontend
-
-      - name: Build Angular
-        run: npm run build
-        working-directory: frontend
+    - name: Build Angular
+      run: npm run build
+      working-directory: frontend/weekly-planner-ui
 
 
 # ---------------- BACKEND DEPLOY ----------------
@@ -89,30 +86,30 @@ jobs:
 # ---------------- FRONTEND DEPLOY ----------------
 
   deploy-frontend:
-    name: Deploy Angular UI to Azure
-    needs: frontend
-    runs-on: ubuntu-latest
+  name: Deploy Angular UI to Azure
+  needs: frontend
+  runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
 
-      - name: Install dependencies
-        run: npm install
-        working-directory: frontend
+    - name: Install dependencies
+      run: npm install
+      working-directory: frontend/weekly-planner-ui
 
-      - name: Build Angular App
-        run: npm run build
-        working-directory: frontend
+    - name: Build Angular
+      run: npm run build
+      working-directory: frontend/weekly-planner-ui
 
-      - name: Deploy UI to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: weekly-planner-cloud-platform-ui
-          publish-profile: ${{ secrets.AZURE_UI_PUBLISH_PROFILE }}
-          package: frontend/dist
+    - name: Deploy UI to Azure
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: weekly-planner-cloud-platform-ui
+        publish-profile: ${{ secrets.AZURE_UI_PUBLISH_PROFILE }}
+        package: frontend/weekly-planner-ui/dist/weekly-planner-ui

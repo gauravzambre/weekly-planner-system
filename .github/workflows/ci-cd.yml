@@ -24,13 +24,13 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Verify backend folder
-        run: ls -la backend
+        run: ls -R backend
 
       - name: Restore dependencies
-        run: dotnet restore backend/WeeklyPlanner.API.csproj
+        run: dotnet restore backend/WeeklyPlanner.API/WeeklyPlanner.API.csproj
 
       - name: Build project
-        run: dotnet build backend/WeeklyPlanner.API.csproj --configuration Release --no-restore
+        run: dotnet build backend/WeeklyPlanner.API/WeeklyPlanner.API.csproj --configuration Release --no-restore
 
 
 # ---------------- FRONTEND BUILD ----------------
@@ -74,7 +74,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Publish API
-        run: dotnet publish backend/WeeklyPlanner.API.csproj -c Release -o publish
+        run: dotnet publish backend/WeeklyPlanner.API/WeeklyPlanner.API.csproj -c Release -o publish
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2

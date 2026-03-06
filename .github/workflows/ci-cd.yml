@@ -1,0 +1,116 @@
+name: Weekly Planner CI/CD
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+
+# ---------------- BACKEND BUILD ----------------
+
+  backend:
+    name: Build .NET Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Verify backend folder
+        run: ls -R backend
+
+      - name: Restore dependencies
+        run: dotnet restore backend/WeeklyPlanner.API/WeeklyPlanner.API.csproj
+
+      - name: Build project
+        run: dotnet build backend/WeeklyPlanner.API/WeeklyPlanner.API.csproj --configuration Release --no-restore
+
+
+# ---------------- FRONTEND BUILD ----------------
+
+  frontend:
+    name: Build Angular Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: frontend/weekly-planner-ui
+
+      - name: Build Angular
+        run: npm run build
+        working-directory: frontend/weekly-planner-ui
+
+
+# ---------------- BACKEND DEPLOY ----------------
+
+  deploy-backend:
+    name: Deploy Backend to Azure
+    needs: backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Publish API
+        run: dotnet publish backend/WeeklyPlanner.API/WeeklyPlanner.API.csproj -c Release -o publish
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: weekly-planner-cloud-platform-api
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: publish
+
+
+# ---------------- FRONTEND DEPLOY ----------------
+
+  deploy-frontend:
+    name: Deploy Angular UI to Azure
+    needs: frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: frontend/weekly-planner-ui
+
+      - name: Build Angular
+        run: npm run build
+        working-directory: frontend/weekly-planner-ui
+
+      - name: Deploy UI to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: weekly-planner-cloud-platform-ui
+          publish-profile: ${{ secrets.AZURE_UI_PUBLISH_PROFILE }}
+          package: frontend/weekly-planner-ui/dist/weekly-planner

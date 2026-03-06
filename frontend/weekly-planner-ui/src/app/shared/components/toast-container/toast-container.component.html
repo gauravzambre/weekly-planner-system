@@ -1,0 +1,5 @@
+<div class="tc">
+  <div *ngFor="let t of ts.toasts()" [class]="'toast t-' + t.type" (click)="ts.dismiss(t.id)">
+    <span>{{ icon(t.type) }}</span><span>{{ t.message }}</span>
+  </div>
+</div>

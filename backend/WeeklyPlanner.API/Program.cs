@@ -66,6 +66,13 @@ builder.Services.AddCors(options =>
 //
 var app = builder.Build();
 
+// automatically apply pending EF Core migrations on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
+
 //
 // ============================
 // MIDDLEWARE PIPELINE

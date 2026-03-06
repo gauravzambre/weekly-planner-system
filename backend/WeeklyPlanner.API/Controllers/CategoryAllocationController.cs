@@ -78,6 +78,45 @@ public class CategoryAllocationController : ControllerBase
         return CreatedAtAction(nameof(SetAllocation), new { id = result.Id }, result);
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] CreateCategoryAllocationDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var alloc = await _context.CategoryAllocations.FindAsync(id);
+        if (alloc == null) return NotFound();
+
+        var plan = await _context.WeeklyPlans.FindAsync(alloc.WeeklyPlanId);
+        if (plan == null)
+            return NotFound("Weekly plan not found.");
+        if (plan.IsFrozen)
+            return BadRequest("Cannot modify allocation after plan is frozen.");
+
+        if (!await _context.Categories.AnyAsync(c => c.Id == dto.CategoryId))
+            return BadRequest("Invalid category.");
+
+        // compute total excluding current allocation
+        var totalOther = await _context.CategoryAllocations
+            .Where(c => c.WeeklyPlanId == alloc.WeeklyPlanId && c.Id != id)
+            .SumAsync(c => c.Percentage);
+        if (totalOther + dto.Percentage > 100)
+            return BadRequest("Total category allocation cannot exceed 100%.");
+
+        alloc.CategoryId = dto.CategoryId;
+        alloc.Percentage = dto.Percentage;
+        await _context.SaveChangesAsync();
+
+        var result = new CategoryAllocationDto
+        {
+            Id = alloc.Id,
+            WeeklyPlanId = alloc.WeeklyPlanId,
+            CategoryId = alloc.CategoryId,
+            Percentage = alloc.Percentage
+        };
+        return Ok(result);
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

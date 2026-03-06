@@ -1,0 +1,171 @@
+using Xunit;
+using Microsoft.EntityFrameworkCore;
+using WeeklyPlanner.API.Controllers;
+using WeeklyPlanner.API.Data;
+using WeeklyPlanner.API.Models;
+using WeeklyPlanner.API.DTOs;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+
+public class PlanTaskTests
+{
+    private ApplicationDbContext GetDbContext()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: System.Guid.NewGuid().ToString())
+            .Options;
+
+        return new ApplicationDbContext(options);
+    }
+
+    // ✅ 1️⃣ Should NOT allow more than 30 hours
+    [Fact]
+    public async Task Should_Not_Allow_More_Than_30_Hours()
+    {
+        var context = GetDbContext();
+
+        context.WeeklyPlans.Add(new WeeklyPlan
+        {
+            Id = 1,
+            StartDate = System.DateTime.Now,
+            IsFrozen = false
+        });
+
+        context.PlanTasks.Add(new PlanTask
+        {
+            WeeklyPlanId = 1,
+            PlannedHours = 25,
+            ActualHours = 0
+        });
+
+        await context.SaveChangesAsync();
+
+        var controller = new PlanTaskController(context);
+
+        var dto = new CreatePlanTaskDto
+        {
+            WeeklyPlanId = 1,
+            PlannedHours = 10
+        };
+
+        var result = await controller.Create(dto);
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    // ✅ 2️⃣ Should allow valid hours under 30
+    [Fact]
+    public async Task Should_Allow_Valid_Hours_Under_30()
+    {
+        var context = GetDbContext();
+
+        context.WeeklyPlans.Add(new WeeklyPlan
+        {
+            Id = 2,
+            StartDate = System.DateTime.Now,
+            IsFrozen = false
+        });
+
+        await context.SaveChangesAsync();
+
+        var controller = new PlanTaskController(context);
+
+        var dto = new CreatePlanTaskDto
+        {
+            WeeklyPlanId = 2,
+            PlannedHours = 10
+        };
+
+        var result = await controller.Create(dto);
+
+        Assert.IsType<CreatedAtActionResult>(result);
+    }
+
+    // ✅ 3️⃣ Should NOT allow adding task when plan is frozen
+    [Fact]
+    public async Task Should_Not_Allow_Adding_Task_When_Plan_Is_Frozen()
+    {
+        var context = GetDbContext();
+
+        context.WeeklyPlans.Add(new WeeklyPlan
+        {
+            Id = 3,
+            StartDate = System.DateTime.Now,
+            IsFrozen = true
+        });
+
+        await context.SaveChangesAsync();
+
+        var controller = new PlanTaskController(context);
+
+        var dto = new CreatePlanTaskDto
+        {
+            WeeklyPlanId = 3,
+            PlannedHours = 5
+        };
+
+        var result = await controller.Create(dto);
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    // ✅ 4️⃣ Should NOT allow progress update before freeze
+    [Fact]
+    public async Task Should_Not_Allow_Progress_Update_Before_Freeze()
+    {
+        var context = GetDbContext();
+
+        context.WeeklyPlans.Add(new WeeklyPlan
+        {
+            Id = 4,
+            StartDate = System.DateTime.Now,
+            IsFrozen = false
+        });
+
+        context.PlanTasks.Add(new PlanTask
+        {
+            Id = 1,
+            WeeklyPlanId = 4,
+            PlannedHours = 5,
+            ActualHours = 0
+        });
+
+        await context.SaveChangesAsync();
+
+        var controller = new PlanTaskController(context);
+
+        var result = await controller.UpdateProgress(1, 3);
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    // ✅ 5️⃣ Should allow progress update after freeze
+    [Fact]
+    public async Task Should_Allow_Progress_Update_After_Freeze()
+    {
+        var context = GetDbContext();
+
+        context.WeeklyPlans.Add(new WeeklyPlan
+        {
+            Id = 5,
+            StartDate = System.DateTime.Now,
+            IsFrozen = true
+        });
+
+        context.PlanTasks.Add(new PlanTask
+        {
+            Id = 2,
+            WeeklyPlanId = 5,
+            PlannedHours = 5,
+            ActualHours = 0
+        });
+
+        await context.SaveChangesAsync();
+
+        var controller = new PlanTaskController(context);
+
+        var result = await controller.UpdateProgress(2, 3);
+
+        Assert.IsType<OkObjectResult>(result);
+    }
+}

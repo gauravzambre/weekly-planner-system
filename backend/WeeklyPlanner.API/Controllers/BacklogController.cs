@@ -32,6 +32,22 @@ public class BacklogController : ControllerBase
         return Ok(dto);
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var b = await _context.BacklogItems.FindAsync(id);
+        if (b == null) return NotFound();
+        var dto = new BacklogItemDto
+        {
+            Id = b.Id,
+            Title = b.Title,
+            Description = b.Description,
+            CategoryId = b.CategoryId,
+            EstimatedHours = b.EstimatedHours
+        };
+        return Ok(dto);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateBacklogItemDto dto)
     {

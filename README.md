@@ -91,7 +91,7 @@ Once planning is completed:
 
 Team leads can:
 
-- View team progress
+- Views team progress
 - Track individual performance
 - Monitor backlog completion
 - Identify blocked tasks

@@ -26,5 +26,26 @@ namespace WeeklyPlanner.API.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<Category?> GetByIdAsync(Guid id)
+        {
+            return await _context.Categories.FindAsync(id);
+        }
+
+        public async Task UpdateAsync(Category category)
+        {
+            _context.Categories.Update(category);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            var existing = await _context.Categories.FindAsync(id);
+            if (existing != null)
+            {
+                _context.Categories.Remove(existing);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

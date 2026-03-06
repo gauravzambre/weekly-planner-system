@@ -6,5 +6,8 @@ namespace WeeklyPlanner.API.Repositories
     {
         Task<Category> CreateAsync(Category category);
         Task<List<Category>> GetAllAsync();
+        Task<Category?> GetByIdAsync(Guid id);
+        Task UpdateAsync(Category category);
+        Task DeleteAsync(Guid id);
     }
 }

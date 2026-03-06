@@ -113,4 +113,4 @@ jobs:
         with:
           app-name: weekly-planner-cloud-platform-ui
           publish-profile: ${{ secrets.AZURE_UI_PUBLISH_PROFILE }}
-          package: frontend/weekly-planner-ui/dist/weekly-planner-ui
+          package: frontend/weekly-planner-ui/dist/weekly-planner

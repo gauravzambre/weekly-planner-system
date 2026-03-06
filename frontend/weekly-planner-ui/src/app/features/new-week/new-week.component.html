@@ -1,0 +1,49 @@
+<app-header backLabel="Dashboard" backRoute="/dashboard" [showHome]="false"></app-header>
+<div class="pw-n af">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:24px">Set Up This Week's Plan</h2>
+
+  <div class="card">
+    <div class="stitle">Step 1 — Date</div>
+    <div class="fg"><label class="fl">Start Date</label><input class="fc" type="date" [(ngModel)]="startDate"/></div>
+    <div *ngIf="startDate && isTuesday()" class="suc" style="margin:0">✓ Week of {{ startDate | date:'mediumDate' }}</div>
+    <div *ngIf="startDate && !isTuesday()" class="err" style="margin:0">⚠️ Planning must start on a <strong>Tuesday</strong>. Please pick a Tuesday.</div>
+  </div>
+
+  <div class="card">
+    <div class="stitle">Step 2 — Who Is Working?</div>
+    <label *ngFor="let m of state.members()" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+      <input type="checkbox" [checked]="selMembers().includes(m.id)" (change)="toggleMember(m.id)" style="accent-color:var(--primary);width:16px;height:16px"/>
+      <span style="font-size:14px;font-weight:500">{{ m.name }}</span>
+      <span *ngIf="m.role?.toLowerCase()==='lead'" class="badge b-lead" style="margin-left:auto">⭐ Lead</span>
+    </label>
+    <div class="inf" style="margin-top:14px;margin-bottom:0">
+      <strong>{{ selMembers().length }}</strong> members · <strong>{{ selMembers().length * 30 }}h</strong> total
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stitle">Step 3 — Hour Allocation by Category</div>
+    <div *ngIf="cats().length===0" class="wrn">No categories found on the server.</div>
+    <ng-container *ngIf="cats().length>0">
+      <div *ngFor="let c of cats()" class="fg">
+        <label class="fl" [style.color]="cc(c.name)">{{ c.name }} %</label>
+        <input class="fc" type="number" min="0" max="100" [value]="ga(c.id)" (input)="sa(c.id, $any($event.target).value)" style="font-family:'DM Mono',monospace"/>
+      </div>
+      <div class="ab">
+        <div *ngFor="let c of cats()" class="as2" [style.flex]="ga(c.id)" [style.background]="cc(c.name)">
+          {{ ga(c.id) > 8 ? (ga(c.id) + '%') : '' }}
+        </div>
+      </div>
+      <div [class]="allocSum()===100 ? 'suc' : overAllocated() ? 'err' : 'wrn'" style="margin:0;font-family:'DM Mono',monospace">
+        Total: {{ allocSum() }}%
+        <span *ngIf="allocSum()===100"> ✓</span>
+        <span *ngIf="overAllocated()"> ❌ Exceeds 100% — reduce allocations to continue</span>
+        <span *ngIf="!overAllocated() && allocSum()<100"> ({{ 100 - allocSum() }}% remaining to allocate)</span>
+      </div>
+    </ng-container>
+  </div>
+
+  <button class="btn bp btn-w btn-lg" [disabled]="!canSubmit()||saving()" (click)="submit()">
+    {{ saving()?'Creating...':'✅ Open Planning for the Team' }}
+  </button>
+</div>

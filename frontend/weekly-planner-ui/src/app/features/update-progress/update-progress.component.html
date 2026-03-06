@@ -1,0 +1,55 @@
+<app-header backLabel="Dashboard" backRoute="/dashboard" [showSwitch]="true" [showHome]="false"></app-header>
+<div class="pw af">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:24px">Update My Progress</h2>
+
+  <div class="card" style="margin-bottom:20px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:14px;font-weight:600">Completed: <span style="color:var(--success);font-family:'DM Mono',monospace">{{ totalDone() }}h</span> ({{ pct() }}%)</span>
+    </div>
+    <div class="pb pb-lg"><div class="pf f-s" [style.width.%]="pct()"></div></div>
+  </div>
+
+  <div *ngIf="allDone()" class="suc" style="text-align:center;font-size:16px;padding:20px">🎉 All tasks done! Great work!</div>
+  <div *ngIf="loading()" class="sw"><div class="sp"></div></div>
+  <div *ngIf="!loading() && myTasks().length===0" class="inf">No tasks in your plan for this week.</div>
+
+  <div *ngFor="let task of myTasks()" class="card" [ngStyle]="{'border-left':'3px solid var(--'+ck(task.categoryName)+')'}" style="padding:18px 20px;margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:12px">
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+          <span [class]="'badge b-'+ck(task.categoryName)">{{ task.categoryName }}</span>
+          <span [class]="sBadge(task.status)">{{ task.status || 'not started' }}</span>
+        </div>
+        <div style="font-weight:700;font-size:14px">{{ task.backlogItemTitle || 'Task #'+task.backlogItemId }}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px">
+          Planned: {{ task.plannedHours }}h · Done: <span style="color:var(--success);font-family:'DM Mono',monospace">{{ task.completedHours||0 }}h</span>
+        </div>
+      </div>
+      <button class="btn bp btn-sm" (click)="openEdit(task)">Update</button>
+    </div>
+    <div class="pb"><div class="pf" [class]="'f-'+ck(task.categoryName)" [style.width.%]="Math.min(100,((task.completedHours||0)/Math.max(task.plannedHours,1))*100)"></div></div>
+
+    <!-- Edit form -->
+    <ng-container *ngIf="editId()===task.id">
+      <div style="margin-top:16px;background:var(--bg-elev);border-radius:10px;padding:16px;border:1px solid rgba(79,124,255,.25)">
+        <div class="stitle" style="font-size:11px;margin-bottom:12px">Update Progress</div>
+        <div class="g2" style="gap:12px;margin-bottom:12px">
+          <div class="fg" style="margin:0"><label class="fl">Hours Completed</label>
+            <input class="fc" type="number" [(ngModel)]="editHours" min="0" style="font-family:'DM Mono',monospace"/>
+            <div *ngIf="editHours > task.plannedHours" class="ferr">⚠ More than committed — still ok!</div></div>
+          <div class="fg" style="margin:0"><label class="fl">Status</label>
+            <select class="fc" [(ngModel)]="editStatus">
+              <option value="not-started">Not Started</option>
+              <option value="in-progress">In Progress</option>
+              <option value="done">Done</option>
+              <option value="blocked">Blocked</option>
+            </select></div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn bs btn-sm" (click)="saveProgress(task)" [disabled]="saving()">{{ saving()?'Saving...':'Save Progress' }}</button>
+          <button class="btn bg btn-sm" (click)="editId.set(0)">Cancel</button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

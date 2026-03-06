@@ -1,0 +1,81 @@
+<app-header [showSwitch]="true" [showHome]="false"></app-header>
+
+<div class="pw af">
+  <div style="margin-bottom:28px">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--primary);margin-bottom:10px">👋 Welcome back</div>
+    <h2 style="font-size:26px;font-weight:700;margin-bottom:4px">What do you want to do?</h2>
+    <p style="color:var(--muted)">Hi, {{ state.currentUser()?.name }}!</p>
+  </div>
+
+  <!-- Status Banner -->
+  <div *ngIf="!activeWeek() && state.isLead()" class="inf">No planning weeks yet. Click "Start a New Week" to begin!</div>
+  <div *ngIf="!activeWeek() && !state.isLead()" class="inf">There's no active plan for you right now. Check back on Tuesday or ask your Team Lead.</div>
+  
+  <div *ngIf="activeWeek() && !activeWeek().isFrozen" class="suc">📅 Plan open · Week of {{ activeWeek().startDate | date:'mediumDate' }}</div>
+  <div *ngIf="activeWeek() && activeWeek().isFrozen" class="wrn">❄️ Plan frozen. Update your progress below.</div>
+
+  <!-- NO ACTIVE WEEK LAYOUT -->
+  <ng-container *ngIf="!activeWeek()">
+    <div class="g2" *ngIf="state.isLead()">
+      <div class="acard" (click)="router.navigate(['/new-week'])">
+        <span class="ai">🚀</span><div class="at">Start a New Week</div><div class="as">Set up a new planning cycle.</div>
+      </div>
+      <div class="acard" (click)="router.navigate(['/backlog'])">
+        <span class="ai">📋</span><div class="at">Manage Backlog</div><div class="as">Add, edit, or browse work items.</div>
+      </div>
+      <div class="acard" (click)="router.navigate(['/team'])">
+        <span class="ai">👥</span><div class="at">Manage Team Members</div><div class="as">Add or remove team members.</div>
+      </div>
+      <div class="acard" (click)="router.navigate(['/past-weeks'])">
+        <span class="ai">🗓️</span><div class="at">View Past Weeks</div><div class="as">Look at completed planning cycles.</div>
+      </div>
+    </div>
+    <div class="g2" *ngIf="!state.isLead()">
+      <div class="acard" (click)="router.navigate(['/backlog'])">
+        <span class="ai">📋</span><div class="at">Manage Backlog</div><div class="as">Add, edit, or browse work items.</div>
+      </div>
+      <div class="acard" (click)="router.navigate(['/past-weeks'])">
+        <span class="ai">🗓️</span><div class="at">View Past Weeks</div><div class="as">Look at completed planning cycles.</div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ACTIVE WEEK LAYOUT -->
+  <ng-container *ngIf="activeWeek()">
+    <div class="stitle">This Week</div>
+    <div class="g2" style="margin-bottom:24px">
+      <div *ngIf="!activeWeek().isFrozen && state.isLead()" class="acard" (click)="router.navigate(['/freeze'])">
+        <span class="ai">❄️</span><div class="at">Review &amp; Freeze</div><div class="as">Lock the plan for the team</div>
+      </div>
+      <div *ngIf="!activeWeek().isFrozen" class="acard" (click)="router.navigate(['/plan'])">
+        <span class="ai">📝</span><div class="at">Plan My Work</div><div class="as">Pick items and commit hours</div>
+      </div>
+      <div *ngIf="activeWeek().isFrozen" class="acard" (click)="router.navigate(['/progress'])">
+        <span class="ai">⏱️</span><div class="at">Update Progress</div><div class="as">Log your completed hours</div>
+      </div>
+      <div class="acard" (click)="router.navigate(['/team-progress'])">
+        <span class="ai">👥</span><div class="at">See Team Progress</div><div class="as">View everyone's status</div>
+      </div>
+      <div *ngIf="activeWeek().isFrozen && state.isLead()" class="acard" (click)="finishWeek()">
+        <span class="ai">✅</span><div class="at">Finish This Week</div><div class="as">Mark planning cycle as complete</div>
+      </div>
+      <div *ngIf="!activeWeek().isFrozen && state.isLead()" class="acard danger" (click)="cancelWeek()">
+        <span class="ai">🗑️</span><div class="at" style="color:var(--danger)">Cancel This Week</div><div class="as">Discard planning session</div>
+      </div>
+    </div>
+
+    <!-- Always visible bottom section (Lead only or member allowed routes) -->
+    <div class="stitle">Quick Links</div>
+    <div class="g3">
+      <div class="acard" (click)="router.navigate(['/backlog'])">
+        <span class="ai">📋</span><div class="at">Manage Backlog</div><div class="as">Add, edit, archive items</div>
+      </div>
+      <div *ngIf="state.isLead()" class="acard" (click)="router.navigate(['/team'])">
+        <span class="ai">👥</span><div class="at">Manage Team</div><div class="as">Add or edit members</div>
+      </div>
+      <div class="acard" (click)="router.navigate(['/past-weeks'])">
+        <span class="ai">🗓️</span><div class="at">Past Weeks</div><div class="as">Browse completed plans</div>
+      </div>
+    </div>
+  </ng-container>
+</div>

@@ -1,0 +1,10 @@
+<div *ngIf="svc.cfg()" class="overlay" (click)="svc.respond(false)">
+  <div class="dlg" (click)="$event.stopPropagation()">
+    <h3>{{ svc.cfg()!.title }}</h3>
+    <p>{{ svc.cfg()!.message }}</p>
+    <div style="display:flex;gap:12px;justify-content:flex-end">
+      <button class="btn bg" (click)="svc.respond(false)">Cancel</button>
+      <button class="btn bp" (click)="svc.respond(true)">Yes, Continue</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+<app-header [showHome]="false" [showSwitch]="false"></app-header>
+
+<div class="pw af">
+  <div style="text-align:center;margin-bottom:36px">
+    <h2 style="font-size:30px;font-weight:700;margin-bottom:8px">Who are you?</h2>
+    <p style="color:var(--muted);font-size:15px">Click your name to get started.</p>
+  </div>
+
+  <div *ngIf="loading()" class="sw"><div class="sp"></div><span>Loading team...</span></div>
+
+  <div *ngIf="!loading() && state.members().length===0" class="inf" style="text-align:center">
+    No team members found.
+    <br><a (click)="router.navigate(['/setup'])">Set up your team →</a>
+  </div>
+
+  <div *ngIf="!loading() && state.members().length>0" class="ga" style="margin-bottom:32px">
+    <div *ngFor="let m of state.members()" class="card click" style="text-align:center;padding:26px 16px" (click)="pick(m)">
+      <div class="av av-l" style="margin:0 auto 14px">{{ m.name[0].toUpperCase() }}</div>
+      <div style="font-weight:700;font-size:15px;margin-bottom:8px">{{ m.name }}</div>
+      <span [class]="m.role?.toLowerCase()==='lead'?'badge b-lead':'badge b-mem'">
+        {{ m.role?.toLowerCase()==='lead' ? '⭐ Team Lead' : 'Team Member' }}
+      </span>
+    </div>
+  </div>
+
+  <div class="div"></div>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <button class="btn bg btn-sm" (click)="seed()" [disabled]="loading()">🌱 Seed Sample Data</button>
+    <button class="btn bg btn-sm" (click)="export()">📥 Download Data</button>
+    <button class="btn bg btn-sm" (click)="triggerImport(fi)">📤 Import Data</button>
+    <button class="btn bg btn-sm" style="color:var(--danger);border-color:rgba(255,77,109,.3)" (click)="resetApp()">🗑️ Reset App</button>
+    <input #fi type="file" accept=".json" style="display:none" (change)="importFile($event)"/>
+  </div>
+</div>

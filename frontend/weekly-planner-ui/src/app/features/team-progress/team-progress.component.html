@@ -1,0 +1,70 @@
+<app-header backLabel="Dashboard" backRoute="/dashboard" [showSwitch]="true" [showHome]="false"></app-header>
+<div class="pw af">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:24px">Team Progress</h2>
+  <div *ngIf="loading()" class="sw"><div class="sp"></div></div>
+
+  <ng-container *ngIf="!loading()">
+    <!-- Team stats -->
+    <div class="g3" style="margin-bottom:24px">
+      <div class="sc2"><div class="sv sv-p">{{ teamPct() }}%</div><div class="sl">Team Completion</div></div>
+      <div class="sc2"><div class="sv sv-s">{{ totalDone() }}h</div><div class="sl">Hours Completed</div></div>
+      <div class="sc2"><div class="sv sv-w">{{ totalPlanned() }}h</div><div class="sl">Hours Planned</div></div>
+    </div>
+
+    <!-- Team progress bar -->
+    <div class="card" style="margin-bottom:24px">
+      <div class="stitle">Overall Progress</div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px">
+        <span>0h</span><span>{{ totalDone() }}h / {{ totalPlanned() }}h</span><span>{{ totalPlanned() }}h</span>
+      </div>
+      <div class="pb pb-lg"><div class="pf f-g" [style.width.%]="teamPct()"></div></div>
+    </div>
+
+    <!-- Member cards -->
+    <div class="stitle">By Member</div>
+    <div *ngFor="let m of members()" class="card" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="av av-s">{{ m.name[0] }}</div>
+          <span style="font-weight:600;font-size:14px">{{ m.name }}</span>
+          <span [class]="m.role?.toLowerCase()==='lead'?'badge b-lead':'badge b-mem'">{{ m.role }}</span>
+        </div>
+        <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--muted)">{{ m.pct }}%</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px">
+        <span>{{ m.done }}h done</span><span>{{ m.planned }}h planned</span>
+      </div>
+      <div class="pb"><div class="pf" [class]="m.pct>=80?'f-s':m.pct>=40?'f-p':'f-w'" [style.width.%]="m.pct"></div></div>
+      <div style="margin-top:10px;text-align:right">
+        <button (click)="router.navigate(['/team-progress/member', m.id])" class="btn-link" style="font-size:12px;color:var(--primary);background:none;border:none;cursor:pointer;padding:0">See Plan →</button>
+      </div>
+      <!-- Task list -->
+      <div *ngIf="m.tasks.length>0" style="margin-top:12px">
+        <div *ngFor="let t of m.tasks" (click)="router.navigate(['/item', t.backlogItemId])"
+          style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;cursor:pointer">
+          <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+            <span [class]="sBadge(t.status)">{{ t.status||'not started' }}</span>
+            <span style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--muted)">{{ t.backlogItemTitle||'Task #'+t.backlogItemId }}</span>
+          </div>
+          <span style="font-family:'DM Mono',monospace;white-space:nowrap;flex-shrink:0;margin-left:8px;color:var(--muted)">{{ t.completedHours||0 }}/{{ t.plannedHours }}h</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- By category -->
+    <div class="stitle" style="margin-top:8px">By Category</div>
+    <div class="g2">
+      <div *ngFor="let c of cats()" class="card" [ngStyle]="{'border-left':'3px solid var(--'+ck(c.name)+')'}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span [class]="'badge b-'+ck(c.name)">{{ c.name }}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted)">{{ c.pct }}%</span>
+        </div>
+        <div class="pb"><div class="pf" [class]="'f-'+ck(c.name)" [style.width.%]="c.pct"></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+          <div style="font-size:11px;color:var(--muted)">{{ c.done }}h done / {{ c.planned }}h planned</div>
+          <button (click)="router.navigate(['/team-progress/category', c.name])" style="font-size:12px;color:var(--primary);background:none;border:none;cursor:pointer;padding:0">See Details →</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

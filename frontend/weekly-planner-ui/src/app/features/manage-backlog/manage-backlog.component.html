@@ -1,0 +1,40 @@
+<app-header backLabel="Dashboard" backRoute="/dashboard" [showHome]="false"></app-header>
+<div class="pw af">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;gap:16px;flex-wrap:wrap">
+    <h2 style="font-size:24px;font-weight:700">Manage Backlog</h2>
+    <button class="btn bp" (click)="router.navigate(['/backlog/new'])">+ Add New Item</button>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+    <button *ngFor="let c of allCats()" class="btn btn-sm"
+      [style.background]="selCats().includes(c)?cBg(c):'transparent'"
+      [style.color]="cColor(c)" [style.border]="'1px solid '+cColor(c)" (click)="toggleCat(c)">● {{ c }}</button>
+    <select class="fc" [(ngModel)]="statusFilter" style="margin-left:auto;max-width:160px;padding:7px 12px;font-size:12px">
+      <option value="available">Available Only</option>
+      <option value="all">Show All</option>
+      <option value="completed">Completed</option>
+      <option value="archived">Archived</option>
+    </select>
+  </div>
+
+  <div *ngIf="loading()" class="sw"><div class="sp"></div></div>
+  <div *ngIf="!loading() && filtered().length===0" class="inf">No items match your filters.</div>
+
+  <div *ngFor="let item of filtered()" class="card" [ngStyle]="stripeStyle(item.categoryName)" style="padding:16px 20px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:16px">
+    <div style="flex:1;min-width:0">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+        <span [class]="cBadge(item.categoryName)">{{ item.categoryName }}</span>
+        <span [class]="sBadge(item.status)">{{ item.status }}</span>
+      </div>
+      <div style="font-weight:700;font-size:14px;margin-bottom:4px">{{ item.title }}</div>
+      <div style="font-size:12px;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis">{{ item.description }}</div>
+    </div>
+    <div style="text-align:right;flex-shrink:0">
+      <div style="font-family:'DM Mono',monospace;font-weight:700;color:var(--muted);margin-bottom:10px;font-size:13px">{{ item.estimatedHours }}h</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn bg btn-sm" (click)="router.navigate(['/backlog/edit', item.id])">Edit</button>
+        <button class="btn bg btn-sm" style="color:var(--danger)" (click)="archive(item)">Archive</button>
+      </div>
+    </div>
+  </div>
+</div>

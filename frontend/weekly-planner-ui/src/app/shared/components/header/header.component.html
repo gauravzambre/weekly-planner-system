@@ -1,0 +1,14 @@
+<header class="topbar">
+  <button class="logo" (click)="goHome()">📋 Weekly Plan Tracker</button>
+  <div class="tbr">
+    <button *ngIf="backLabel" class="bbtn" (click)="goBack()">← {{ backLabel }}</button>
+    <button *ngIf="showHome" class="bbtn" (click)="router.navigate(['/dashboard'])">🏠 Home</button>
+    <div *ngIf="state.currentUser()" class="uchip">
+      {{ state.currentUser().name }}
+      <span [class]="state.isLead() ? 'badge b-lead' : 'badge b-mem'">
+        {{ state.isLead() ? '⭐ LEAD' : 'MEMBER' }}
+      </span>
+    </div>
+    <button *ngIf="showSwitch && state.currentUser()" class="bbtn" (click)="switchUser()">🔄 Switch</button>
+  </div>
+</header>

@@ -10,10 +10,7 @@ The application allows teams to manage backlog items, allocate hours according t
 # 🚀 Live Application
 
 Frontend (Angular SPA)  
-🔗 https://weekly-planner-ui.azurewebsites.net
-
-Backend API (.NET 8)  
-🔗 https://weekly-planner-api.azurewebsites.net
+🔗 https://weekly-planner-system-ui-fsfqh7gnhahydqdg.centralindia-01.azurewebsites.net/
 
 ---
 
@@ -105,7 +102,7 @@ Team leads can:
 
 System architecture diagram:
 
-https://drive.google.com/file/d/dummy-architecture-diagram-link/view
+https://drive.google.com/file/d/1s4TF518WCVoAeMaZrF1gIsCTALp3P12J/view?usp=sharing
 
 ---
 
@@ -289,7 +286,6 @@ Real-time telemetry
 ## 👨‍💻 Author
 
 Gaurav Zambre
-Software Engineer
 Full Stack Developer
 
 Responsibilities:

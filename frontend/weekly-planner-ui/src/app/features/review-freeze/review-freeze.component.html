@@ -1,0 +1,57 @@
+<app-header backLabel="Dashboard" backRoute="/dashboard" [showHome]="false"></app-header>
+<div class="pw af">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:24px">Review the Team's Plan</h2>
+  <div *ngIf="loading()" class="sw"><div class="sp"></div></div>
+  <ng-container *ngIf="!loading()">
+    <!-- Category budgets -->
+    <div *ngIf="catRows().length>0" class="card">
+      <div class="stitle">Category Budget vs Planned</div>
+      <div class="twrap">
+        <table class="dt">
+          <thead><tr><th>Category</th><th>Alloc %</th><th>Budget h</th><th>Planned h</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let c of catRows()">
+              <td><span [class]="'badge '+ck(c.name)">{{ c.name }}</span></td>
+              <td style="font-family:'DM Mono',monospace">{{ c.pct }}%</td>
+              <td style="font-family:'DM Mono',monospace">{{ c.budget }}h</td>
+              <td style="font-family:'DM Mono',monospace">{{ c.planned }}h</td>
+              <td><span [style.color]="c.over?'var(--warn)':'var(--success)'">{{ c.over?'⚠ Over budget':'✓ OK' }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Member plans -->
+    <div class="card">
+      <div class="stitle">Member Plans</div>
+      <div *ngFor="let m of members()" style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div class="mri">
+            <div class="av av-s">{{ m.name[0] }}</div>
+            <span style="font-weight:600">{{ m.name }}</span>
+          </div>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted)">{{ m.totalHours }}h</span>
+        </div>
+        <div *ngIf="m.tasks.length===0" style="margin-left:44px;font-size:12px;color:var(--danger)">⚠ No items planned.</div>
+        <div *ngFor="let t of m.tasks" style="margin-left:44px;font-size:12px;color:var(--muted);padding:2px 0">
+          • {{ t.backlogItemTitle || 'Task #'+t.backlogItemId }} — <span style="font-family:'DM Mono',monospace">{{ t.plannedHours }}h</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Validation -->
+    <div *ngIf="issues().length===0" class="suc">✅ All good! You can freeze the plan.</div>
+    <div *ngIf="issues().length>0" class="err">
+      <strong>⚠ Issues to resolve:</strong>
+      <ul style="margin-top:8px;padding-left:18px;line-height:1.8"><li *ngFor="let i of issues()">{{ i }}</li></ul>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:4px">
+      <button class="btn bp" style="flex:2" [disabled]="issues().length>0||freezing()" (click)="freeze()">
+        {{ freezing()?'Freezing...':'❄️ Freeze the Plan' }}
+      </button>
+      <button class="btn bg" style="flex:1;color:var(--danger);border-color:rgba(255,77,109,.3)" (click)="cancel()">Cancel Planning</button>
+    </div>
+  </ng-container>
+</div>

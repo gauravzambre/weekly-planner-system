@@ -1,0 +1,35 @@
+<app-header backLabel="Past Weeks" backRoute="/past-weeks" [showHome]="true"></app-header>
+<div class="pw af">
+  <div *ngIf="week()" style="margin-bottom:24px">
+    <div style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">❄️ Frozen Plan</div>
+    <h2 style="font-size:24px;font-weight:700">Week of {{ week().startDate | date:'mediumDate' }}</h2>
+  </div>
+  <div *ngIf="loading()" class="sw"><div class="sp"></div></div>
+  <ng-container *ngIf="!loading()">
+    <div class="g3" style="margin-bottom:24px">
+      <div class="sc2"><div class="sv sv-s">{{ pct() }}%</div><div class="sl">Completion</div></div>
+      <div class="sc2"><div class="sv sv-p">{{ done() }}h</div><div class="sl">Hours Done</div></div>
+      <div class="sc2"><div class="sv sv-w">{{ planned() }}h</div><div class="sl">Hours Planned</div></div>
+    </div>
+    <div class="pb pb-lg" style="margin-bottom:24px"><div class="pf f-g" [style.width.%]="pct()"></div></div>
+
+    <div *ngFor="let group of byMember()" class="card" style="margin-bottom:12px">
+      <div class="stitle">{{ group.name }}</div>
+      <div class="twrap">
+        <table class="dt">
+          <thead><tr><th>Task</th><th>Category</th><th>Planned</th><th>Done</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let t of group.tasks">
+              <td style="font-weight:600">{{ t.backlogItemTitle||'Task #'+t.backlogItemId }}</td>
+              <td><span [class]="'badge b-'+ck(t.categoryName)">{{ t.categoryName }}</span></td>
+              <td style="font-family:'DM Mono',monospace">{{ t.plannedHours }}h</td>
+              <td style="font-family:'DM Mono',monospace;color:var(--success)">{{ t.completedHours||0 }}h</td>
+              <td><span [class]="sBadge(t.status)">{{ t.status||'not started' }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div *ngIf="tasks().length===0" class="inf">No tasks found for this week.</div>
+  </ng-container>
+</div>

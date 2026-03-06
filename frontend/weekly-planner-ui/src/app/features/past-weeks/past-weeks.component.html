@@ -1,0 +1,21 @@
+<app-header backLabel="Dashboard" backRoute="/dashboard" [showHome]="false"></app-header>
+<div class="pw af">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:24px">Past Weeks</h2>
+  <div *ngIf="loading()" class="sw"><div class="sp"></div></div>
+  <div *ngIf="!loading() && weeks().length===0" class="inf">No frozen weeks yet.</div>
+  <div *ngFor="let w of weeks()" class="card click" style="padding:20px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:16px" (click)="router.navigate(['/past-weeks', w.id])">
+    <div style="flex:1">
+      <div style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">❄️ Frozen</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:8px">Week of {{ w.startDate | date:'mediumDate' }}</div>
+      <div class="pb" style="max-width:240px">
+        <div class="pf f-g" [style.width.%]="w.pct"></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:5px">{{ w.done }}h done / {{ w.planned }}h planned · {{ w.tasks.length }} tasks</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:28px;font-weight:700;font-family:'DM Mono',monospace;color:var(--success)">{{ w.pct }}%</div>
+      <div style="font-size:11px;color:var(--muted)">completion</div>
+      <div style="color:var(--primary);font-size:13px;margin-top:8px">View →</div>
+    </div>
+  </div>
+</div>

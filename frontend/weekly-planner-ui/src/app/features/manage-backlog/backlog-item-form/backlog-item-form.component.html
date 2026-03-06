@@ -1,0 +1,20 @@
+<app-header [backLabel]="isEdit()?'Edit Item':'Backlog'" backRoute="/backlog" [showHome]="false"></app-header>
+<div class="pw-n af">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:24px">{{ isEdit() ? 'Edit' : 'Add' }} Backlog Item</h2>
+  <div class="card">
+    <div class="fg"><label class="fl">Title *</label><input class="fc" type="text" [(ngModel)]="title" placeholder="Item title..."/>
+      <div *ngIf="submitted && !title" class="ferr">Title is required.</div></div>
+    <div class="fg"><label class="fl">Description</label><textarea class="fc" [(ngModel)]="desc" placeholder="What does this involve?"></textarea></div>
+    <div class="fg"><label class="fl">Category *</label>
+      <select class="fc" [(ngModel)]="catId">
+        <option [value]="0" disabled>Select a category...</option>
+        <option *ngFor="let c of cats()" [value]="c.id">{{ c.name }}</option>
+      </select>
+      <div *ngIf="submitted && !catId" class="ferr">Category is required.</div></div>
+    <div class="fg"><label class="fl">Estimated Hours</label><input class="fc" type="number" [(ngModel)]="hours" min="0" placeholder="e.g. 8"/></div>
+    <div style="display:flex;gap:12px;margin-top:8px">
+      <button class="btn bp btn-w" (click)="save()" [disabled]="saving()">{{ saving()?'Saving...':'Save This Item' }}</button>
+      <button class="btn bg" (click)="router.navigate(['/backlog'])">Cancel</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<app-header backLabel="Dashboard" backRoute="/dashboard" [showHome]="false"></app-header>
+<div class="pw af">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:24px">Manage Team Members</h2>
+  <div class="card">
+    <div class="stitle">Add a Member</div>
+    <div class="ir" style="margin-bottom:4px">
+      <input class="fc" type="text" [(ngModel)]="newName" placeholder="Full name..." (keydown.enter)="add()"/>
+      <select class="fc" [(ngModel)]="newRole" style="max-width:130px"><option>Member</option><option>Lead</option></select>
+      <button class="btn bp" (click)="add()" [disabled]="saving()">Save</button>
+    </div>
+    <div *ngIf="addErr()" class="ferr">{{ addErr() }}</div>
+  </div>
+  <div class="card">
+    <div class="stitle">All Members ({{ state.members().length }})</div>
+    <div *ngIf="loading()" class="sw"><div class="sp"></div></div>
+    <div *ngFor="let m of state.members()" class="mrow">
+      <div class="mri">
+        <div class="av av-s">{{ m.name[0].toUpperCase() }}</div>
+        <div>
+          <ng-container *ngIf="editId()!==m.id"><div style="font-weight:600;font-size:14px">{{ m.name }}</div></ng-container>
+          <ng-container *ngIf="editId()===m.id">
+            <input class="fc" type="text" [(ngModel)]="editName" style="padding:5px 10px;font-size:14px;width:160px"/>
+          </ng-container>
+          <span [class]="rb(m.role)" style="margin-top:3px">{{ m.role }}</span>
+        </div>
+      </div>
+      <div class="mra">
+        <ng-container *ngIf="editId()!==m.id">
+          <button class="btn bg btn-sm" (click)="startEdit(m)">Edit</button>
+          <button *ngIf="m.role?.toLowerCase()!=='lead'" class="btn bg btn-sm" (click)="makeLead(m)">Make Lead</button>
+        </ng-container>
+        <ng-container *ngIf="editId()===m.id">
+          <button class="btn bs btn-sm" (click)="saveEdit(m)">Save</button>
+          <button class="btn bg btn-sm" (click)="cancelEdit()">Cancel</button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

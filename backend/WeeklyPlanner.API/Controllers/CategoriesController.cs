@@ -59,5 +59,42 @@ namespace WeeklyPlanner.API.Controllers
 
             return Ok(response);
         }
+
+        // PUT: api/categories/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] CreateCategoryDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing == null) return NotFound();
+
+            existing.Name = dto.Name;
+            existing.Description = dto.Description;
+            existing.UpdatedAt = DateTime.UtcNow;
+
+            await _repository.UpdateAsync(existing);
+
+            var response = new CategoryResponseDto
+            {
+                Id = existing.Id,
+                Name = existing.Name,
+                Description = existing.Description,
+                CreatedAt = existing.CreatedAt
+            };
+            return Ok(response);
+        }
+
+        // DELETE: api/categories/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing == null) return NotFound();
+
+            await _repository.DeleteAsync(id);
+            return NoContent();
+        }
     }
 }

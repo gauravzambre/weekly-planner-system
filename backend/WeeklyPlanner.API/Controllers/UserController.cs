@@ -54,6 +54,18 @@ namespace WeeklyPlanner.API.Controllers
             return Ok(response);
         }
 
+        // DELETE: api/users/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null) return NotFound();
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
         // GET BY ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)

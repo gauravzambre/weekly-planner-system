@@ -17,11 +17,18 @@ public class PlanTaskController : ControllerBase
         _context = context;
     }
 
-    // GET ALL TASKS
+    // GET ALL TASKS (optionally filtered by query params)
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int? planId, [FromQuery] int? memberId)
     {
-        var tasks = await _context.PlanTasks.ToListAsync();
+        IQueryable<Models.PlanTask> query = _context.PlanTasks;
+
+        if (planId.HasValue)
+            query = query.Where(t => t.WeeklyPlanId == planId.Value);
+        if (memberId.HasValue)
+            query = query.Where(t => t.TeamMemberId == memberId.Value);
+
+        var tasks = await query.ToListAsync();
         var dto = tasks.Select(t => new PlanTaskDto
         {
             Id = t.Id,
@@ -83,6 +90,34 @@ public class PlanTaskController : ControllerBase
 
         return CreatedAtAction(nameof(GetAll), new { id = result.Id }, result);
     }
+
+    // GET SINGLE TASK
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var task = await _context.PlanTasks.FindAsync(id);
+        if (task == null)
+            return NotFound();
+
+        var dto = new PlanTaskDto
+        {
+            Id = task.Id,
+            WeeklyPlanId = task.WeeklyPlanId,
+            BacklogItemId = task.BacklogItemId,
+            TeamMemberId = task.TeamMemberId,
+            PlannedHours = task.PlannedHours,
+            ActualHours = task.ActualHours,
+            UserId = task.UserId
+        };
+        return Ok(dto);
+    }
+
+    // RESOURCE-ORIENTED FILTERS
+    [HttpGet("plan/{planId}")]
+    public Task<IActionResult> GetByPlan(int planId) => GetAll(planId, null);
+
+    [HttpGet("member/{memberId}")]
+    public Task<IActionResult> GetByMember(int memberId) => GetAll(null, memberId);
 
     // UPDATE PROGRESS (ONLY AFTER FREEZE)
     [HttpPut("{id}/progress")]

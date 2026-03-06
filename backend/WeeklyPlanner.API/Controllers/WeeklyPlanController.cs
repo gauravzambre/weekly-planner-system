@@ -78,4 +78,42 @@ public class WeeklyPlanController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok("Plan Frozen");
     }
+
+    // PUT: api/weeklyplan/{id}
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] CreateWeeklyPlanDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var plan = await _context.WeeklyPlans.FindAsync(id);
+        if (plan == null) return NotFound();
+
+        if (plan.IsFrozen)
+            return BadRequest("Cannot modify a frozen plan");
+
+        plan.StartDate = dto.StartDate;
+        await _context.SaveChangesAsync();
+
+        var result = new WeeklyPlanDto
+        {
+            Id = plan.Id,
+            StartDate = plan.StartDate,
+            IsFrozen = plan.IsFrozen
+        };
+
+        return Ok(result);
+    }
+
+    // DELETE: api/weeklyplan/{id}
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var plan = await _context.WeeklyPlans.FindAsync(id);
+        if (plan == null) return NotFound();
+
+        _context.WeeklyPlans.Remove(plan);
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
 }

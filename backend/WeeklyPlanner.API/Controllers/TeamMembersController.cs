@@ -106,4 +106,28 @@ public async Task<IActionResult> Delete(int id)
 
     return NoContent();
 }
+
+    // GET TASKS FOR A TEAM MEMBER
+    [HttpGet("{id}/tasks")]
+    public async Task<IActionResult> GetTasks(int id)
+    {
+        var exists = await _context.TeamMembers.AnyAsync(m => m.Id == id);
+        if (!exists)
+            return NotFound();
+
+        var tasks = await _context.PlanTasks
+            .Where(t => t.TeamMemberId == id)
+            .ToListAsync();
+        var dto = tasks.Select(t => new PlanTaskDto
+        {
+            Id = t.Id,
+            WeeklyPlanId = t.WeeklyPlanId,
+            BacklogItemId = t.BacklogItemId,
+            TeamMemberId = t.TeamMemberId,
+            PlannedHours = t.PlannedHours,
+            ActualHours = t.ActualHours,
+            UserId = t.UserId
+        });
+        return Ok(dto);
+    }
 }

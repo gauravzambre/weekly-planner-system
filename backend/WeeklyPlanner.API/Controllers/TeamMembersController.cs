@@ -54,4 +54,56 @@ public class TeamMembersController : ControllerBase
 
         return CreatedAtAction(nameof(GetAll), new { id = result.Id }, result);
     }
+
+// getbyID team memberer
+    [HttpGet("{id}")]
+public async Task<IActionResult> GetById(int id)
+{
+    var member = await _context.TeamMembers.FindAsync(id);
+
+    if (member == null)
+        return NotFound();
+
+    var dto = new TeamMemberDto
+    {
+        Id = member.Id,
+        Name = member.Name,
+        Role = member.Role
+    };
+
+    return Ok(dto);
+}
+
+
+[HttpPut("{id}")]
+public async Task<IActionResult> Update(int id, [FromBody] CreateTeamMemberDto dto)
+{
+    if (!ModelState.IsValid)
+        return BadRequest(ModelState);
+
+    var member = await _context.TeamMembers.FindAsync(id);
+
+    if (member == null)
+        return NotFound();
+
+    member.Name = dto.Name;
+    member.Role = dto.Role;
+
+    await _context.SaveChangesAsync();
+
+    return Ok(member);
+}
+[HttpDelete("{id}")]
+public async Task<IActionResult> Delete(int id)
+{
+    var member = await _context.TeamMembers.FindAsync(id);
+
+    if (member == null)
+        return NotFound();
+
+    _context.TeamMembers.Remove(member);
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+}
 }

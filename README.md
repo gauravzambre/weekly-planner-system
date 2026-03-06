@@ -10,7 +10,7 @@ The application allows teams to manage backlog items, allocate hours according t
 # 🚀 Live Application
 
 Frontend (Angular SPA)  
-🔗 https://weekly-planner-system-ui-fsfqh7gnhahydqdg.centralindia-01.azurewebsites.net/
+🔗 [https://weekly-planner-system-ui-fsfqh7gnhahydqdg.centralindia-01.azurewebsites.net/](https://planner-dashboard-ui-bmf4djfffadddca4.canadacentral-01.azurewebsites.net/#/setup)
 
 ---
 

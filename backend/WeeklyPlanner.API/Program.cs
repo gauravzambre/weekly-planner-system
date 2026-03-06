@@ -1,24 +1,22 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using WeeklyPlanner.API.Data;
-using WeeklyPlanner.API.Repositories; 
+using WeeklyPlanner.API.Repositories;
 using WeeklyPlanner.API.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 //
-// ============================
-// SERVICES CONFIGURATION
-// ============================
+// ==========================================
+// SERVICE CONFIGURATION
+// ==========================================
 //
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<IAppService, AppService>();
-// builder.Services.AddScoped<IAppService, AppService>();
 
-// Add Controllers
+// Controllers
 builder.Services.AddControllers();
 
 //
-// SQL SERVER DB CONTEXT (Replace Mongo)
+// Database Configuration (Azure SQL / SQL Server)
 //
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
@@ -26,47 +24,57 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     ));
 
 //
-// Swagger (Enabled for Production Also)
+// Dependency Injection
+//
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IAppService, AppService>();
+
+//
+// Swagger Configuration
 //
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "WeeklyPlanner API",
+        Title = "Weekly Planner API",
         Version = "v1",
-        Description = "Weekly Planner Backend API"
+        Description = "Backend API for Weekly Planner Cloud Platform"
     });
 });
 
 //
 // CORS CONFIGURATION
+// Allow Angular Local + Azure Hosted UI
 //
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
-        policy =>
-        {
-            policy
-                .WithOrigins(
-                    "http://localhost:4200",
-                    "https://localhost:4200",
-                    "https://weekly-planner-cloud-platform-ui-gcefgwgue5h4cncd.centralindia-01.azurewebsites.net"
-                )
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-        });
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:4200",
+                "https://localhost:4200",
+                "https://weekly-planner-cloud-platform-ui-gcefgwgue5h4cncd.centralindia-01.azurewebsites.net"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
 });
 
 //
-// ============================
-// BUILD APP
-// ============================
+// ==========================================
+// BUILD APPLICATION
+// ==========================================
 //
 var app = builder.Build();
 
-// automatically apply pending EF Core migrations on startup
+//
+// ==========================================
+// APPLY DATABASE MIGRATIONS AUTOMATICALLY
+// ==========================================
+//
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -74,34 +82,42 @@ using (var scope = app.Services.CreateScope())
 }
 
 //
-// ============================
+// ==========================================
 // MIDDLEWARE PIPELINE
-// ============================
+// ==========================================
 //
 
-// Swagger
+// Enable Swagger (Dev + Prod)
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "WeeklyPlanner API V1");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Weekly Planner API v1");
     c.RoutePrefix = "swagger";
 });
 
-// HTTPS
+//
+// HTTPS Redirection
+//
 app.UseHttpsRedirection();
 
-// CORS (Before Controllers)
+//
+// Enable CORS
+//
 app.UseCors("AllowFrontend");
 
+//
 // Authorization
+//
 app.UseAuthorization();
 
+//
 // Map Controllers
+//
 app.MapControllers();
 
 //
-// ============================
-// RUN APP
-// ============================
+// ==========================================
+// RUN APPLICATION
+// ==========================================
 //
 app.Run();

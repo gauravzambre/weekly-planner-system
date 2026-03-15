@@ -10,10 +10,10 @@ The application allows teams to manage backlog items, allocate hours according t
 # 🚀 Live Application
 
 Frontend (Angular SPA)  
-🔗 https://weekly-planner-ui.azurewebsites.net
+🔗 https://zenova-ui-gha5ckfdh0gdheep.centralindia-01.azurewebsites.net/
 
-Backend API (.NET 8)  
-🔗 https://weekly-planner-api.azurewebsites.net
+Backend (Dotnet 8.0)  
+🔗 https://zenova-api-hwcfbbejhae9dsex.centralindia-01.azurewebsites.net/swagger/index.html
 
 ---
 
@@ -94,7 +94,7 @@ Once planning is completed:
 
 Team leads can:
 
-- View team progress
+- Views team progress
 - Track individual performance
 - Monitor backlog completion
 - Identify blocked tasks
@@ -105,7 +105,7 @@ Team leads can:
 
 System architecture diagram:
 
-https://drive.google.com/file/d/dummy-architecture-diagram-link/view
+[https://drive.google.com/file/d/1s4TF518WCVoAeMaZrF1gIsCTALp3P12J/view?usp=sharing](https://drive.google.com/file/d/15ZkWJZDI4XAO1ny1pTD9ZudLl7X2Boc5/view?usp=sharing)
 
 ---
 
@@ -289,7 +289,6 @@ Real-time telemetry
 ## 👨‍💻 Author
 
 Gaurav Zambre
-Software Engineer
 Full Stack Developer
 
 Responsibilities:

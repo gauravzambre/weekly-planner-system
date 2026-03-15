@@ -105,7 +105,7 @@ Team leads can:
 
 System architecture diagram:
 
-https://drive.google.com/file/d/1s4TF518WCVoAeMaZrF1gIsCTALp3P12J/view?usp=sharing
+[https://drive.google.com/file/d/1s4TF518WCVoAeMaZrF1gIsCTALp3P12J/view?usp=sharing](https://drive.google.com/file/d/15ZkWJZDI4XAO1ny1pTD9ZudLl7X2Boc5/view?usp=sharing)
 
 ---
 
